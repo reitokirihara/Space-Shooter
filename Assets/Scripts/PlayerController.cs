@@ -10,12 +10,31 @@ public class Boundary {
 public class PlayerController : MonoBehaviour {
 
 	public float speed;
+	public float tilt;
 	public Boundary boundary;
 
+	public GameObject shot;
+	public Transform shotSpawn;
+	public float fireRate;
+
+	private float nextFire;
+
 	Rigidbody rb;
+	AudioSource a;
 
 	void Start(){
 		rb = GetComponent<Rigidbody> ();
+		a = GetComponent<AudioSource> ();
+	}
+
+	void Update ()
+	{
+		if (Input.GetButton ("Fire1") && Time.time > nextFire) 
+		{
+			nextFire = Time.time + fireRate;
+			Instantiate (shot, shotSpawn.position, shotSpawn.rotation);	
+			a.Play ();
+		}
 	}
 
 	void FixedUpdate ()
@@ -31,5 +50,6 @@ public class PlayerController : MonoBehaviour {
 			0.0f, 
 			Mathf.Clamp (rb.position.z, boundary.zMin, boundary.zMax));
 
+		rb.rotation = Quaternion.Euler (0.0f, 0.0f, rb.velocity.x * -tilt);
 	}
 }
